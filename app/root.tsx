@@ -13,7 +13,7 @@ export const links: LinksFunction = () => [];
 
 export default function App() {
   return (
-    <html lang="en" className="h-full bg-surface-light dark:bg-dark-surface-DEFAULT transition-colors duration-200">
+    <html lang="en" className="h-full bg-surface-light dark:bg-dark-surface-DEFAULT transition-[background-color,color] duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -36,7 +36,7 @@ export default function App() {
           }}
         />
       </head>
-      <body className="h-full">
+      <body className="h-full transition-[background-color,color] duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]">
         <div className="fixed top-1 right-2 z-50 sm:top-4 sm:right-4">
           <ThemeToggle />
         </div>
