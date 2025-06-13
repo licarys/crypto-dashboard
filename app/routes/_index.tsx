@@ -202,6 +202,11 @@ export default function Index() {
 
       {/* Drag Hint */}
       <DragHint />
+
+      {/* Footer */}
+      <footer className="w-full mt-12 py-6 text-center text-sm text-gray-500 dark:text-gray-400 bg-transparent select-none">
+        Creado por <a href="https://github.com/licarys" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary-600 dark:hover:text-primary-400 transition-colors">@licarys</a> · © {new Date().getFullYear()}
+      </footer>
     </div>
   );
 }
