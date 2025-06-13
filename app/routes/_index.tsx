@@ -6,12 +6,16 @@ import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { ErrorMessage } from "~/components/ErrorMessage";
 import { CryptoCard } from "~/components/CryptoCard";
 import { SearchBar } from "~/components/SearchBar";
+import { SortButtons } from "~/components/SortButtons";
+import { SortField, SortOrder } from "~/types/sort";
 
 export default function Index() {
   const [cryptos, setCryptos] = useState<CryptoData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortField, setSortField] = useState<SortField>('name');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,11 +55,32 @@ export default function Index() {
     return () => clearInterval(interval);
   }, []);
 
-  const filteredCryptos = cryptos.filter(
-    (crypto) =>
-      crypto.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      crypto.symbol.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredAndSortedCryptos = cryptos
+    .filter(
+      (crypto) =>
+        crypto.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        crypto.symbol.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      const aValue = a[sortField];
+      const bValue = b[sortField];
+      
+      if (aValue === null && bValue === null) return 0;
+      if (aValue === null) return 1;
+      if (bValue === null) return -1;
+      
+      const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+
+  const handleSort = (field: SortField) => {
+    if (field === sortField) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+  };
 
   if (loading) {
     return <LoadingSpinner />;
@@ -74,8 +99,14 @@ export default function Index() {
         onSearchChange={setSearchTerm}
       />
 
+      <SortButtons
+        sortField={sortField}
+        sortOrder={sortOrder}
+        onSort={handleSort}
+      />
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredCryptos.map((crypto) => (
+        {filteredAndSortedCryptos.map((crypto) => (
           <CryptoCard key={crypto.id} crypto={crypto} />
         ))}
       </div>
