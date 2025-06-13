@@ -49,6 +49,13 @@ export function useCryptoDrag(cryptos: CryptoData[]) {
   const sortedCryptos = cryptoOrder
     .map(id => cryptoMap.get(id))
     .filter((c): c is CryptoData => !!c);
+  
+  const getSortedCryptos = () => {
+    const cryptoMap = new Map(cryptos.map(c => [c.id, c]));
+    return cryptoOrder
+      .map(id => cryptoMap.get(id))
+      .filter((c): c is CryptoData => !!c);
+  };
 
-  return { sensors, handleDragEnd, sortedCryptos, resetOrder };
+  return { sensors, handleDragEnd, getSortedCryptos, sortedCryptos, resetOrder };
 }

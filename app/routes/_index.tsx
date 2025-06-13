@@ -25,7 +25,7 @@ export default function Index() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  const { sensors, handleDragEnd, sortedCryptos, resetOrder } = useCryptoDrag(cryptos);
+  const { sensors, handleDragEnd, getSortedCryptos, resetOrder } = useCryptoDrag(cryptos);
 
   const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
     setNotification({ message, type });
@@ -49,7 +49,7 @@ export default function Index() {
       const cryptoData = TOP_CRYPTOS.map((crypto) => {
         const rateToUSD = parseFloat(usdRates[crypto.id]);
         const rateToBTC = parseFloat(btcRates[crypto.id]);
-        
+
         return {
           id: crypto.id,
           name: crypto.name,
@@ -74,9 +74,9 @@ export default function Index() {
 
   useEffect(() => {
     fetchData();
-    
+
     const intervalId = setInterval(fetchData, REFRESH_INTERVAL);
-    
+
     return () => {
       clearInterval(intervalId);
     };
@@ -89,6 +89,12 @@ export default function Index() {
   if (error) {
     return <ErrorMessage message={error} />;
   }
+
+  const filteredAndSortedCryptos = getSortedCryptos().filter(
+    (crypto) =>
+      crypto.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      crypto.symbol.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -114,20 +120,20 @@ export default function Index() {
             variant="secondary"
             className="ml-2"
           >
-            Reset Order
+            Reset Order (A–Z)
           </Button>
         </div>
       </div>
-      
-      <SearchBar 
+
+      <SearchBar
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
       />
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={sortedCryptos.map(c => c.id)} strategy={verticalListSortingStrategy}>
+        <SortableContext items={filteredAndSortedCryptos.map(c => c.id)} strategy={verticalListSortingStrategy}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {sortedCryptos.map((crypto) => (
+            {filteredAndSortedCryptos.map((crypto) => (
               <SortableCryptoCard key={crypto.id} crypto={crypto} />
             ))}
           </div>
