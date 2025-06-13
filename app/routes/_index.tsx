@@ -25,7 +25,7 @@ export default function Index() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  const { sensors, handleDragEnd, sortedCryptos } = useCryptoDrag(cryptos);
+  const { sensors, handleDragEnd, sortedCryptos, resetOrder } = useCryptoDrag(cryptos);
 
   const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
     setNotification({ message, type });
@@ -92,22 +92,31 @@ export default function Index() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <div>
+      <div className="flex mb-8 lg:flex-row flex-col items-center justify-between gap-8 lg:gap-0">
+        <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold">Cryptocurrency Dashboard</h1>
           {lastUpdated && (
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500">
               Last updated: {lastUpdated.toLocaleTimeString()}
             </p>
           )}
         </div>
-        <Button
-          onClick={fetchData}
-          disabled={isRefreshing}
-          icon={<RefreshIcon className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />}
-        >
-          Refresh Rates
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={fetchData}
+            disabled={isRefreshing}
+            icon={<RefreshIcon className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />}
+          >
+            Refresh Rates
+          </Button>
+          <Button
+            onClick={resetOrder}
+            variant="secondary"
+            className="ml-2"
+          >
+            Reset Order
+          </Button>
+        </div>
       </div>
       
       <SearchBar 

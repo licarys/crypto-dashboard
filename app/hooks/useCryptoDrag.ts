@@ -3,14 +3,33 @@ import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { CryptoData } from '~/types/crypto';
 
+const STORAGE_KEY = 'crypto-order';
+
 export function useCryptoDrag(cryptos: CryptoData[]) {
   const [cryptoOrder, setCryptoOrder] = useState<string[]>([]);
 
   useEffect(() => {
-    if (cryptos.length > 0) {
-      setCryptoOrder(cryptos.map((c) => c.id));
-    }
+    const stored = localStorage.getItem(STORAGE_KEY);
+    const savedOrder = stored ? JSON.parse(stored) as string[] : [];
+
+    const cryptoIds = cryptos.map(c => c.id);
+    const validSavedOrder = savedOrder.filter(id => cryptoIds.includes(id));
+    const missingFromSaved = cryptoIds.filter(id => !validSavedOrder.includes(id));
+
+    setCryptoOrder([...validSavedOrder, ...missingFromSaved]);
   }, [cryptos]);
+
+  useEffect(() => {
+    if (cryptoOrder.length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cryptoOrder));
+    }
+  }, [cryptoOrder]);
+
+  const resetOrder = () => {
+    const originalOrder = cryptos.map((c) => c.id);
+    setCryptoOrder(originalOrder);
+    localStorage.removeItem(STORAGE_KEY); // También borra la persistencia
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -27,7 +46,9 @@ export function useCryptoDrag(cryptos: CryptoData[]) {
 
   const cryptoMap = useMemo(() => new Map(cryptos.map(c => [c.id, c])), [cryptos]);
 
-  const sortedCryptos = cryptoOrder.map(id => cryptoMap.get(id)).filter(Boolean) as CryptoData[];
+  const sortedCryptos = cryptoOrder
+    .map(id => cryptoMap.get(id))
+    .filter((c): c is CryptoData => !!c);
 
-  return { sensors, handleDragEnd, sortedCryptos };
+  return { sensors, handleDragEnd, sortedCryptos, resetOrder };
 }
