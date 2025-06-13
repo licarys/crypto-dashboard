@@ -52,7 +52,8 @@ describe('CryptoCard', () => {
       'rounded-lg',
       'overflow-hidden',
       'transition-all',
-      'duration-300',
+      'duration-500',
+      'ease-[cubic-bezier(0.4,0,0.2,1)]',
       'hover:shadow-lg',
       'border',
       'border-gray-200/50',
@@ -94,7 +95,10 @@ describe('CryptoCard', () => {
       'dark:to-gray-900/0',
       'border-r',
       'border-gray-200/50',
-      'dark:border-gray-700/50'
+      'dark:border-gray-700/50',
+      'transition-all',
+      'duration-500',
+      'ease-[cubic-bezier(0.4,0,0.2,1)]'
     );
   });
 
@@ -104,6 +108,47 @@ describe('CryptoCard', () => {
     expect(priceSection).toHaveClass(
       'flex-1',
       'p-4'
+    );
+  });
+
+  it('applies correct styles to the hover effect', () => {
+    const { container } = render(<CryptoCard crypto={mockCrypto} />);
+    const hoverEffect = container.querySelector('[class*="ring-blue-500"]');
+    expect(hoverEffect).toHaveClass(
+      'absolute',
+      'inset-0',
+      'rounded-lg',
+      'ring-1',
+      'ring-inset',
+      'ring-blue-500/0',
+      'group-hover:ring-blue-500/20',
+      'transition-all',
+      'duration-500',
+      'ease-[cubic-bezier(0.4,0,0.2,1)]'
+    );
+  });
+
+  it('applies correct styles to the icon', () => {
+    const { container } = render(<CryptoCard crypto={mockCrypto} />);
+    const icon = container.querySelector('.w-10');
+    expect(icon).toHaveClass(
+      'w-10',
+      'h-10',
+      'rounded-lg',
+      'bg-gradient-to-br',
+      'from-blue-600',
+      'to-blue-700',
+      'flex',
+      'items-center',
+      'justify-center',
+      'text-white',
+      'font-semibold',
+      'text-lg',
+      'shadow-sm',
+      'mb-1.5',
+      'transition-all',
+      'duration-500',
+      'ease-[cubic-bezier(0.4,0,0.2,1)]'
     );
   });
 }); 

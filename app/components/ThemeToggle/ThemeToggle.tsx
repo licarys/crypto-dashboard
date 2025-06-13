@@ -41,12 +41,12 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-lg bg-white/95 dark:bg-gray-900/95 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200/50 dark:border-gray-700/50 shadow-sm transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] transform hover:scale-105 active:scale-95"
+      className="p-2 rounded-lg bg-white/95 dark:bg-gray-900/95 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200/50 dark:border-gray-700/50 shadow-sm transition-colors duration-200"
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       <div className="relative w-5 h-5">
         <div 
-          className={`absolute inset-0 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+          className={`absolute inset-0 transition-all duration-200 ${
             isDark 
               ? 'opacity-0 rotate-90 scale-75' 
               : 'opacity-100 rotate-0 scale-100'
@@ -55,7 +55,7 @@ export function ThemeToggle() {
           <MoonIcon className="w-5 h-5" />
         </div>
         <div 
-          className={`absolute inset-0 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+          className={`absolute inset-0 transition-all duration-200 ${
             isDark 
               ? 'opacity-100 rotate-0 scale-100' 
               : 'opacity-0 -rotate-90 scale-75'
