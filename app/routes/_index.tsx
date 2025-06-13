@@ -9,6 +9,7 @@ import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { Button } from "~/components/Button";
 import { Notification } from "~/components/Notification";
 import { NoResults } from "~/components/NoResults";
+import { DragHint } from "~/components/DragHint";
 import { meta } from "~/meta";
 
 import { DndContext, closestCenter } from '@dnd-kit/core';
@@ -101,8 +102,8 @@ export default function Index() {
   );
 
   return (
-    <div className="bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-surface-light dark:bg-dark-surface-DEFAULT">
+      <div className="container mx-auto px-4 py-8">
         {/* Header Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">
@@ -198,6 +199,9 @@ export default function Index() {
           onClose={() => setNotification(null)}
         />
       )}
+
+      {/* Drag Hint */}
+      <DragHint />
     </div>
   );
 }
