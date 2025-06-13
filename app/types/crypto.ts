@@ -4,6 +4,7 @@ export interface CryptoData {
   symbol: string;
   toUsd: number | null;
   toBTC: number | null;
+  priceChange24h?: number;
 }
 
 export interface ExchangeRates {

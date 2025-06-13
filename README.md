@@ -1,137 +1,84 @@
-# Crypto Dashboard
+# Crypto Market Overview
 
-A modern cryptocurrency dashboard built with React, TypeScript, and Tailwind CSS. The dashboard displays real-time cryptocurrency rates and allows users to customize their view through drag-and-drop reordering.
+A modern, responsive cryptocurrency dashboard built with React and Remix. This application provides real-time cryptocurrency prices in both USD and BTC, featuring a clean and intuitive user interface with dark mode support.
 
 ## Features
 
-- Real-time cryptocurrency rates
-- Drag-and-drop card reordering with persistent order
-- Responsive grid layout
-- Search functionality
-- Dark mode support
-- Automatic data refresh
-- Smooth animations and transitions
+- 🎨 Modern UI with dark mode support
+- 📱 Fully responsive design
+- 🔄 Real-time price updates
+- 🔍 Search functionality
+- 🎯 Sortable cryptocurrency cards
+- 🌙 Theme toggle (light/dark mode)
+- 📊 Price display in USD and BTC
+- ⚡ Fast and efficient updates
 
 ## Tech Stack
 
-- React 18
-- TypeScript
-- Tailwind CSS
-- @dnd-kit for drag-and-drop
-- Axios for API calls
-- Jest & React Testing Library for testing
+- [Remix](https://remix.run/) - Full stack web framework
+- [React](https://reactjs.org/) - UI library
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [Heroicons](https://heroicons.com/) - Icons
+- [dnd-kit](https://dndkit.com/) - Drag and drop functionality
+- [Jest](https://jestjs.io/) - Testing
+- [Testing Library](https://testing-library.com/) - Component testing
 
-## Setup Instructions
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- npm or yarn
+
+### Installation
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/yourusername/crypto-dashboard.git
 cd crypto-dashboard
 ```
 
 2. Install dependencies:
 ```bash
 npm install
+# or
+yarn install
 ```
 
 3. Start the development server:
 ```bash
 npm run dev
+# or
+yarn dev
 ```
 
-4. Run tests:
-```bash
-npm test
-```
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Project Structure
 
 ```
 app/
-├── assets/
-│   └── icons/
-├── components/
-│   ├── Button/
-│   ├── CryptoCard/
-│   ├── ErrorMessage/
-│   ├── LoadingSpinner/
-│   ├── Notification/
-│   ├── SearchBar/
-│   └── SortableCryptoCard/
-├── config/
-│   └── api.ts
-├── hooks/
-│   └── useCryptoDrag.ts
-├── routes/
-│   └── _index.tsx
-└── types/
-    ├── crypto.ts
-    └── sort.ts
+├── components/         # Reusable UI components
+│   ├── Button/        # Button component
+│   ├── CryptoCard/    # Cryptocurrency card component
+│   ├── SearchBar/     # Search functionality
+│   ├── ThemeToggle/   # Dark mode toggle
+│   └── ...
+├── routes/            # Application routes
+├── types/            # TypeScript type definitions
+├── utils/            # Utility functions
+└── config/           # Configuration files
 ```
 
-## Design Decisions & Tradeoffs
+## Testing
 
-### 1. State Management
-- **Decision**: Used React's built-in state management with hooks
-- **Why**: The application's state requirements are relatively simple and don't warrant a complex state management solution
-- **Tradeoff**: Might need to refactor if the application grows significantly
+Run the test suite:
 
-### 2. Drag & Drop Implementation
-- **Decision**: Used @dnd-kit instead of react-dnd or react-beautiful-dnd
-- **Why**: 
-  - Better TypeScript support
-  - More modern API
-  - Better performance
-  - Simpler implementation
-- **Tradeoff**: Slightly larger bundle size
-
-### 3. Card Order Persistence
-- **Decision**: Store order in localStorage
-- **Why**: 
-  - Simple to implement
-  - Works offline
-  - No backend required
-- **Tradeoff**: Order is device-specific
-
-### 4. API Integration
-- **Decision**: Direct API calls with Axios
-- **Why**: 
-  - Simple to implement
-  - Good TypeScript support
-  - Familiar API
-- **Tradeoff**: No built-in caching or request deduplication
-
-### 5. Styling
-- **Decision**: Tailwind CSS
-- **Why**: 
-  - Rapid development
-  - Consistent design
-  - Small bundle size
-  - Great developer experience
-- **Tradeoff**: Learning curve for team members new to Tailwind
-
-### 6. Testing Strategy
-- **Decision**: Jest + React Testing Library
-- **Why**: 
-  - Industry standard
-  - Great integration with React
-  - Focus on user-centric testing
-- **Tradeoff**: Some setup complexity
-
-## Performance Considerations
-
-1. **API Calls**
-   - Implemented 30-second refresh interval
-   - Could be optimized with WebSocket for real-time updates
-
-2. **Drag & Drop**
-   - Using hardware acceleration for smooth animations
-   - Optimized re-renders with useCallback and useMemo
-
-3. **Responsive Design**
-   - Mobile-first approach
-   - Grid layout adapts to screen size
-   - Touch-friendly interactions
+```bash
+npm test
+# or
+yarn test
+```
 
 ## Contributing
 
@@ -143,4 +90,10 @@ app/
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [CoinGecko API](https://www.coingecko.com/en/api) for cryptocurrency data
+- [Tailwind CSS](https://tailwindcss.com/) for the utility-first CSS framework
+- [Heroicons](https://heroicons.com/) for the beautiful icons

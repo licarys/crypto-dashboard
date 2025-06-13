@@ -5,7 +5,7 @@ import { API_ENDPOINTS, API_PARAMS } from "~/config/api";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { ErrorMessage } from "~/components/ErrorMessage";
 import { SearchBar } from "~/components/SearchBar";
-import { RefreshIcon } from "~/assets/icons/RefreshIcon";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { Button } from "~/components/Button";
 import { Notification } from "~/components/Notification";
 
@@ -62,7 +62,7 @@ export default function Index() {
       setCryptos(cryptoData);
       setError(null);
       setLastUpdated(new Date());
-      showNotification('Cryptocurrency rates updated.');
+      showNotification('Cryptocurrency prices updated.');
     } catch (error) {
       setError("Failed to fetch cryptocurrency data");
       showNotification('Failed to update cryptocurrency rates', 'error');
@@ -98,43 +98,56 @@ export default function Index() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex mb-8 lg:flex-row flex-col items-center justify-between gap-8 lg:gap-0">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold">Cryptocurrency Dashboard</h1>
-          {lastUpdated && (
-            <p className="text-sm text-gray-500">
-              Last updated: {lastUpdated.toLocaleTimeString()}
+      <div className="mb-8">
+        {/* Header Section */}
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-6">
+          <div className="flex-1">
+            <h1 className="text-4xl font-semibold text-gray-900 dark:text-white mb-2">
+              Crypto Market Overview
+            </h1>
+            <p className="text-base text-gray-600 dark:text-gray-400 mb-2">
+              Live cryptocurrency prices in USD and BTC
             </p>
-          )}
+            {lastUpdated && (
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Last updated: {lastUpdated.toLocaleTimeString()}
+              </p>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Button
+              onClick={fetchData}
+              disabled={isRefreshing}
+              icon={<ArrowPathIcon className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />}
+              size="md"
+            >
+              Update Prices
+            </Button>
+            <Button
+              onClick={resetOrder}
+              variant="secondary"
+              size="md"
+            >
+              Sort Alphabetically
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button
-            onClick={fetchData}
-            disabled={isRefreshing}
-            icon={<RefreshIcon className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />}
-          >
-            Refresh Rates
-          </Button>
-          <Button
-            onClick={resetOrder}
-            variant="secondary"
-            className="ml-2"
-          >
-            Reset Order (A–Z)
-          </Button>
+
+        {/* Search Section */}
+        <div className="max-w-2xl">
+          <SearchBar
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+          />
         </div>
       </div>
 
-      <SearchBar
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-      />
-
+      {/* Cards Grid */}
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={filteredAndSortedCryptos.map(c => c.id)} strategy={verticalListSortingStrategy}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredAndSortedCryptos.map((crypto) => (
-              <SortableCryptoCard className="rounded-lg hover:shadow-xl" key={crypto.id} crypto={crypto} />
+              <SortableCryptoCard key={crypto.id} crypto={crypto} />
             ))}
           </div>
         </SortableContext>

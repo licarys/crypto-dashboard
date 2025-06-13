@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ClearIcon } from '~/assets/icons/ClearIcon';
+import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface SearchBarProps {
   searchTerm: string;
@@ -18,25 +18,53 @@ export function SearchBar({ searchTerm, onSearchChange }: SearchBarProps) {
 
   return (
     <div className="relative mb-6">
-      <input
-        ref={inputRef}
-        type="text"
-        value={searchTerm}
-        onChange={(e) => onSearchChange(e.target.value)}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        placeholder="Search cryptocurrencies..."
-        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-      />
-      {searchTerm && (
-        <button
-          onClick={() => onSearchChange('')}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          aria-label="Clear search"
-        >
-          <ClearIcon className="h-5 w-5" />
-        </button>
-      )}
+      <div className={`
+        relative flex items-center
+        bg-white/95 dark:bg-gray-900/95
+        border border-gray-200/50 dark:border-gray-700/50
+        rounded-lg
+        transition-all duration-200
+        ${isFocused ? 'ring-2 ring-blue-500/50 border-transparent shadow-sm' : 'hover:border-gray-300/50 dark:hover:border-gray-600/50'}
+      `}>
+        <div className="pl-4">
+          <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+        </div>
+        
+        <input
+          ref={inputRef}
+          type="text"
+          value={searchTerm}
+          onChange={(e) => onSearchChange(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          placeholder="Search by name or symbol (e.g. Bitcoin, BTC)"
+          className="
+            w-full
+            py-3 px-3
+            bg-transparent
+            text-gray-900 dark:text-white
+            placeholder-gray-400 dark:placeholder-gray-500
+            focus:outline-none
+            text-sm
+          "
+        />
+        
+        {searchTerm && (
+          <button
+            onClick={() => onSearchChange('')}
+            className="
+              p-2 mr-1
+              text-gray-400 hover:text-gray-600 dark:hover:text-gray-300
+              rounded-full
+              hover:bg-gray-100 dark:hover:bg-gray-800
+              transition-colors duration-200
+            "
+            aria-label="Clear search"
+          >
+            <XMarkIcon className="h-5 w-5" />
+          </button>
+        )}
+      </div>
     </div>
   );
 } 

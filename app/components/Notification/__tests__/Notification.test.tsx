@@ -11,21 +11,24 @@ describe('Notification', () => {
     render(<Notification {...defaultProps} />);
     
     expect(screen.getByText('Test notification')).toBeInTheDocument();
-    expect(screen.getByRole('alert')).toHaveClass('bg-green-100', 'text-green-800');
+    const notification = screen.getByRole('alert');
+    expect(notification).toHaveClass('bg-green-50', 'text-green-800');
   });
 
   it('renders with error type', () => {
     render(<Notification {...defaultProps} type="error" />);
     
     expect(screen.getByText('Test notification')).toBeInTheDocument();
-    expect(screen.getByRole('alert')).toHaveClass('bg-red-100', 'text-red-800');
+    const notification = screen.getByRole('alert');
+    expect(notification).toHaveClass('bg-red-50', 'text-red-800');
   });
 
   it('renders with info type', () => {
     render(<Notification {...defaultProps} type="info" />);
     
     expect(screen.getByText('Test notification')).toBeInTheDocument();
-    expect(screen.getByRole('alert')).toHaveClass('bg-blue-100', 'text-blue-800');
+    const notification = screen.getByRole('alert');
+    expect(notification).toHaveClass('bg-blue-50', 'text-blue-800');
   });
 
   it('calls onClose when close button is clicked', () => {
@@ -41,7 +44,7 @@ describe('Notification', () => {
     render(<Notification {...defaultProps} />);
     
     const notification = screen.getByRole('alert');
-    expect(notification).toHaveClass('fixed', 'bottom-4', 'right-4');
+    expect(notification).toHaveClass('fixed', 'bottom-6', 'right-6');
   });
 
   it('renders with animation class', () => {
@@ -49,5 +52,31 @@ describe('Notification', () => {
     
     const notification = screen.getByRole('alert');
     expect(notification).toHaveClass('animate-fade-in-up');
+  });
+
+  it('renders with correct base styles', () => {
+    render(<Notification {...defaultProps} />);
+    
+    const notification = screen.getByRole('alert');
+    expect(notification).toHaveClass(
+      'rounded-lg',
+      'border',
+      'shadow-lg',
+      'backdrop-blur-sm',
+      'text-sm',
+      'font-medium'
+    );
+  });
+
+  it('renders close button with correct styles', () => {
+    render(<Notification {...defaultProps} />);
+    
+    const closeButton = screen.getByLabelText('Close notification');
+    expect(closeButton).toHaveClass(
+      'rounded-full',
+      'hover:bg-white/20',
+      'transition-colors',
+      'duration-200'
+    );
   });
 }); 
