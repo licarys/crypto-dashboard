@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import type { MetaFunction } from "@remix-run/node";
 import axios from "axios";
 import { CryptoData, ExchangeRates, TOP_CRYPTOS } from "~/types/crypto";
 import { API_ENDPOINTS, API_PARAMS } from "~/config/api";
@@ -13,6 +14,20 @@ import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableCryptoCard } from '~/components/SortableCryptoCard';
 import { useCryptoDrag } from '~/hooks/useCryptoDrag';
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Crypto Market Overview | Live Cryptocurrency Prices" },
+    { name: "description", content: "Track real-time cryptocurrency prices in USD and BTC. View live updates, search by name or symbol, and customize your view with our modern crypto dashboard." },
+    { name: "keywords", content: "cryptocurrency, crypto prices, bitcoin, ethereum, live prices, crypto dashboard, BTC, USD" },
+    { property: "og:title", content: "Crypto Market Overview | Live Cryptocurrency Prices" },
+    { property: "og:description", content: "Track real-time cryptocurrency prices in USD and BTC. View live updates, search by name or symbol, and customize your view with our modern crypto dashboard." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+    { name: "twitter:title", content: "Crypto Market Overview | Live Cryptocurrency Prices" },
+    { name: "twitter:description", content: "Track real-time cryptocurrency prices in USD and BTC. View live updates, search by name or symbol, and customize your view with our modern crypto dashboard." },
+  ];
+};
 
 const REFRESH_INTERVAL = 30000; // 30 seconds
 
