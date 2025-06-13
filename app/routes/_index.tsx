@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { CryptoData, ExchangeRates, TOP_CRYPTOS } from "~/types/crypto";
 import { API_ENDPOINTS, API_PARAMS } from "~/config/api";
@@ -8,6 +8,11 @@ import { CryptoCard } from "~/components/CryptoCard";
 import { SearchBar } from "~/components/SearchBar";
 import { SortButtons } from "~/components/SortButtons";
 import { SortField, SortOrder } from "~/types/sort";
+import { RefreshIcon } from "~/assets/icons/RefreshIcon";
+import { Button } from "~/components/Button";
+import { Notification } from "~/components/Notification";
+
+const REFRESH_INTERVAL = 30000; // 30 seconds
 
 export default function Index() {
   const [cryptos, setCryptos] = useState<CryptoData[]>([]);
@@ -16,44 +21,64 @@ export default function Index() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+
+  const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
+
+  const fetchData = useCallback(async () => {
+    try {
+      setIsRefreshing(true);
+      const usdResponse = await axios.get<ExchangeRates>(
+        `${API_ENDPOINTS.EXCHANGE_RATES}?currency=${API_PARAMS.DEFAULT_CURRENCY}`
+      );
+      const btcResponse = await axios.get<ExchangeRates>(
+        `${API_ENDPOINTS.EXCHANGE_RATES}?currency=${API_PARAMS.DEFAULT_CRYPTO}`
+      );
+      const usdRates = usdResponse.data.data.rates;
+      const btcRates = btcResponse.data.data.rates;
+
+      const cryptoData = TOP_CRYPTOS.map((crypto) => {
+        const rateToUSD = parseFloat(usdRates[crypto.id]);
+        const rateToBTC = parseFloat(btcRates[crypto.id]);
+        
+        return {
+          id: crypto.id,
+          name: crypto.name,
+          symbol: crypto.id,
+          toUsd: rateToUSD ? 1 / rateToUSD : null,
+          toBTC: rateToBTC ? 1 / rateToBTC : null,
+        };
+      });
+
+      setCryptos(cryptoData);
+      setError(null);
+      setLastUpdated(new Date());
+      showNotification('Cryptocurrency rates updated.');
+    } catch (error) {
+      setError("Failed to fetch cryptocurrency data");
+      showNotification('Failed to update cryptocurrency rates', 'error');
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const usdResponse = await axios.get<ExchangeRates>(
-          `${API_ENDPOINTS.EXCHANGE_RATES}?currency=${API_PARAMS.DEFAULT_CURRENCY}`
-        );
-        const btcResponse = await axios.get<ExchangeRates>(
-          `${API_ENDPOINTS.EXCHANGE_RATES}?currency=${API_PARAMS.DEFAULT_CRYPTO}`
-        );
-        const usdRates = usdResponse.data.data.rates;
-        const btcRates = btcResponse.data.data.rates;
-
-        const cryptoData = TOP_CRYPTOS.map((crypto) => {
-          const rateToUSD = parseFloat(usdRates[crypto.id]);
-          const rateToBTC = parseFloat(btcRates[crypto.id]);
-          
-          return {
-            id: crypto.id,
-            name: crypto.name,
-            symbol: crypto.id,
-            toUsd: rateToUSD ? 1 / rateToUSD : null,
-            toBTC: rateToBTC ? 1 / rateToBTC : null,
-          };
-        });
-
-        setCryptos(cryptoData);
-        setLoading(false);
-      } catch (error) {
-        setError("Failed to fetch cryptocurrency data");
-        setLoading(false);
-      }
-    };
-
     fetchData();
-    const interval = setInterval(fetchData, 60000);
-    return () => clearInterval(interval);
-  }, []);
+    
+    const intervalId = setInterval(fetchData, REFRESH_INTERVAL);
+    
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [fetchData]);
 
   const filteredAndSortedCryptos = cryptos
     .filter(
@@ -92,7 +117,23 @@ export default function Index() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Cryptocurrency Dashboard</h1>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-3xl font-bold">Cryptocurrency Dashboard</h1>
+          {lastUpdated && (
+            <p className="text-sm text-gray-500 mt-1">
+              Last updated: {lastUpdated.toLocaleTimeString()}
+            </p>
+          )}
+        </div>
+        <Button
+          onClick={fetchData}
+          disabled={isRefreshing}
+          icon={<RefreshIcon className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />}
+        >
+          Refresh Rates
+        </Button>
+      </div>
       
       <SearchBar 
         searchTerm={searchTerm}
@@ -110,6 +151,14 @@ export default function Index() {
           <CryptoCard key={crypto.id} crypto={crypto} />
         ))}
       </div>
+
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
     </div>
   );
 }
