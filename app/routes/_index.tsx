@@ -4,13 +4,15 @@ import { CryptoData, ExchangeRates, TOP_CRYPTOS } from "~/types/crypto";
 import { API_ENDPOINTS, API_PARAMS } from "~/config/api";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { ErrorMessage } from "~/components/ErrorMessage";
-import { CryptoCard } from "~/components/CryptoCard";
 import { SearchBar } from "~/components/SearchBar";
-import { SortButtons } from "~/components/SortButtons";
-import { SortField, SortOrder } from "~/types/sort";
 import { RefreshIcon } from "~/assets/icons/RefreshIcon";
 import { Button } from "~/components/Button";
 import { Notification } from "~/components/Notification";
+
+import { DndContext, closestCenter } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { SortableCryptoCard } from '~/components/SortableCryptoCard';
+import { useCryptoDrag } from '~/hooks/useCryptoDrag';
 
 const REFRESH_INTERVAL = 30000; // 30 seconds
 
@@ -19,11 +21,11 @@ export default function Index() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortField, setSortField] = useState<SortField>('name');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+
+  const { sensors, handleDragEnd, sortedCryptos } = useCryptoDrag(cryptos);
 
   const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
     setNotification({ message, type });
@@ -80,33 +82,6 @@ export default function Index() {
     };
   }, [fetchData]);
 
-  const filteredAndSortedCryptos = cryptos
-    .filter(
-      (crypto) =>
-        crypto.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        crypto.symbol.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => {
-      const aValue = a[sortField];
-      const bValue = b[sortField];
-      
-      if (aValue === null && bValue === null) return 0;
-      if (aValue === null) return 1;
-      if (bValue === null) return -1;
-      
-      const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-      return sortOrder === 'asc' ? comparison : -comparison;
-    });
-
-  const handleSort = (field: SortField) => {
-    if (field === sortField) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortOrder('asc');
-    }
-  };
-
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -140,17 +115,15 @@ export default function Index() {
         onSearchChange={setSearchTerm}
       />
 
-      <SortButtons
-        sortField={sortField}
-        sortOrder={sortOrder}
-        onSort={handleSort}
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredAndSortedCryptos.map((crypto) => (
-          <CryptoCard key={crypto.id} crypto={crypto} />
-        ))}
-      </div>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={sortedCryptos.map(c => c.id)} strategy={verticalListSortingStrategy}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {sortedCryptos.map((crypto) => (
+              <SortableCryptoCard key={crypto.id} crypto={crypto} />
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
 
       {notification && (
         <Notification
