@@ -34,7 +34,7 @@ A modern, responsive cryptocurrency dashboard built with React and Remix. This a
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/crypto-dashboard.git
+git clone https://github.com/licarys/crypto-dashboard
 cd crypto-dashboard
 ```
 
